@@ -1,0 +1,102 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+
+\title{Equation classe}
+\author{Maxime Walder}
+\date{March 2022}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+\bigskip
+
+Moyenne (population):\par
+\begin{equation}
+    \mu = \frac{\sum_{i=1}^{N} X_i}{N}
+\end{equation}
+
+Moyenne (échatillon): \par
+
+
+\begin{equation}
+    \bar{X} = \frac{\sum_{i=1}^{n} X_i}{n}
+\end{equation}
+
+\bigskip
+
+Étendue
+
+\begin{equation}
+    Etendue = X_{max} - X_{min}
+\end{equation}
+
+\bigskip
+
+
+Éspace interquartile
+\begin{equation}
+    Interquartile = Q_3 - Q_1
+\end{equation}
+
+
+\bigskip
+
+
+Écart type (population)
+\begin{equation}
+    \sigma = \sqrt{\frac{\sum_{i=1}^{N} (X_i - \mu)^2}{N}}
+\end{equation}
+
+
+Écart type (échantillon)
+\begin{equation}
+    S = \sqrt{\frac{\sum_{i=1}^{n} (X_i - \bar{X})^2}{n-1}}
+\end{equation}
+
+
+Variance (population)
+\begin{equation}
+    \sigma^2 = \frac{\sum_{i=1}^{N} (X_i - \mu)^2}{N}
+\end{equation}
+
+
+Variance (échantillon)
+\begin{equation}
+    S^2 = \frac{\sum_{i=1}^{n} (X_i - \bar{X})^2}{n-1}
+\end{equation}
+
+Skewness (Pearson-Fisher)
+
+\begin{equation}
+    Sk_1 = \frac{\frac{\sum_{i=1}^{n}(X_i - \bar{X})^3}{n}}{S^3}
+\end{equation}
+
+Skewness (Galton skewness)
+
+\begin{equation}
+    Sk_{Galton} = \frac{Q_1 + Q_3 -2Q_2}{Q3-Q1}
+\end{equation}
+
+Skewness (Person 2 Skewness)
+
+\begin{equation}
+    Sk_2 = 3\frac{\bar{x} + Q_2}{S}
+\end{equation}
+
+Kurtosis
+
+\begin{equation}
+    Kurt = \frac{\frac{\sum_{i=1}^{n}(X_i - \bar{X})^4}{n}}{S^4}
+\end{equation}
+
+
+Intervalle de confiance ($\alpha$ = 95\%)
+
+\begin{equation}
+    [\bar{X} - 1.96 * \frac{S}{\sqrt{n}}, \bar{X} + 1.96 * \frac{S}{\sqrt{n}}]
+\end{equation}
+
+\end{document}
