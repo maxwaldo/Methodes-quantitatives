@@ -1,0 +1,87 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+
+\title{Equation session 12}
+\author{Maxime Walder}
+\date{March 2022}
+
+\begin{document}
+
+\maketitle
+
+\section{Equation list}
+
+\bigskip
+
+Effectif théorique: 
+
+\begin{equation}
+    E = \frac{Total\:ligne \times Total\:colonne}{Total\:observation} = \frac{n_l \times n_c}{n}
+\end{equation}
+
+\bigskip
+
+$\chi^2$ (Chi carré):\par
+\begin{equation}
+    \chi^2 = \sum_{i=1}^{n} \frac{(O_i - E_i)^2}{E_i} 
+\end{equation}
+
+
+Degré de liberté: \par
+\begin{equation}
+    DL = (Nombre\:ligne - 1)(Nombre\:colonne - 1) 
+\end{equation}
+
+V de Cramer:
+\begin{equation}
+    V = \sqrt{\frac{\chi^2}{\chi^2_{max}}}
+\end{equation}
+
+$\chi^2_{max}$
+\begin{equation}
+    \chi^2_{max} = n \times [min(l,c) - 1]
+\end{equation}
+
+\bigskip
+Covariance:
+\begin{equation}
+    Cov(X,Y) = \frac{\sum_{i=1}^{n} (X_i - \bar{X}) (Y_i - \bar{Y})}{n}  
+\end{equation}
+
+
+\bigskip
+
+\begin{equation}
+    r = \frac{Cov(X,Y)}{S_x S_y}
+\end{equation}
+
+t-test de Student:
+
+\begin{equation}
+    t = \frac{\bar{X_a} - \bar{X_b}}{\sqrt{\frac{S_g^2}{n_a}\frac{S_g^2}{n_b}}}
+\end{equation}
+
+
+\bigskip
+Variance groupée:
+
+\begin{equation}
+    S_g^2 = \frac{\sum_{i=0}^{n_a} (X_i - \bar{X_a})^2 \sum_{i=1}^{n_b} (X_i - \bar{X_b})^2 }{n_a + n_b - 2}
+\end{equation}
+
+\bigskip
+
+Correlation Pearson:
+
+\begin{equation}
+    r_p = \frac{\sum_{i=1}^{n} (X_i - \bar{X}) (Y_i - \bar{Y})}{\sqrt{\sum_{i=1}^n (X_i - \bar{X})^2}\sqrt{\sum_{i=1}^n (Y_i - \bar{Y})^2}}
+\end{equation}
+
+
+Correlation Pearson (version simplifiée)
+
+\begin{equation}
+    r = \frac{Cov(X,Y)}{S_x S_y}
+\end{equation}
+
+\end{document}
