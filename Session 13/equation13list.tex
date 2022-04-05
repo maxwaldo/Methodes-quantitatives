@@ -1,0 +1,70 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+
+\title{Equation session 13}
+\author{Maxime Walder}
+\date{March 2022}
+
+\begin{document}
+
+\maketitle
+
+\section{Equation list}
+
+\bigskip
+
+
+Correlation Pearson (version simplifiée)
+
+\begin{equation}
+    r = \frac{Cov(X,Y)}{S_x S_y}
+\end{equation}
+
+\bigskip
+
+Correlation Pearson:
+
+\begin{equation}
+    r_p = \frac{\sum_{i=1}^{n} (X_i - \bar{X}) (Y_i - \bar{Y})}{\sqrt{\sum_{i=1}^n (X_i - \bar{X})^2}\sqrt{\sum_{i=1}^n (Y_i - \bar{Y})^2}}
+\end{equation}
+
+On a donc la covariance entre x et y multiplié par l'inverse de la racine carrée du produit des variances. 
+
+\begin{equation}
+    Corr = Cov(X,Y) \times \frac{1}{\sqrt{Var(X)Var(Y)}}
+\end{equation}
+
+Si on développe le calcule, on voit que les n peuvent se simplifier. 
+
+\begin{equation}
+    Corr(x,y) = \frac{\sum_{i=1}^{n} (X_i - \bar{X}) (Y_i - \bar{Y})}{n} \times \frac{\sqrt{n}\sqrt{n}}{\sqrt{\sum_{i=1}^{n} (X_i - \bar{X})^2}\sqrt{\sum_{i=1}^{n} (Y_i - \bar{Y})^2}}
+\end{equation}
+
+On a donc bien la correlation de Pearson:
+
+\begin{equation}
+    r_p = \frac{\sum_{i=1}^{n} (X_i - \bar{X}) (Y_i - \bar{Y})}{\sqrt{\sum_{i=1}^n (X_i - \bar{X})^2}\sqrt{\sum_{i=1}^n (Y_i - \bar{Y})^2}}
+\end{equation}
+
+\bigskip
+
+Partial correlation 
+
+\begin{equation}
+    r_{xy.z} = \frac{r_{xy} - r_{xz}r_{yz}}{\sqrt{(1 - r_{xy}^2)(1 - r_{yz}^2)}}
+\end{equation}
+
+
+
+
+
+
+
+Régression linéaire univariée
+
+\begin{equation}
+    Y_i = \beta_0 + \beta_{1}x_i + \epsilon_
+\end{equation}
+
+
+\end{document}
