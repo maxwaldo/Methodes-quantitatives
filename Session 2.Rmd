@@ -1,0 +1,506 @@
+---
+title: "2. Statistiques descriptive avec R"
+author: "Maxime Walder"
+date: "2026-02-02"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Organisation du document
+
+- [Pourquoi faire des statistiques descriptives?](#sec1)
+- [Importer les données.](#sec2)
+- [Inspecter ses données](#sec3)
+- [Les différents types de variables.](#sec4)
+- [Recoder les variables dans une base de données.](#sec5)
+- [Statistiques descriptives pour des variables métriques](#sec6)
+- [Statistiques descriptives pour des variables catégorielles](#sec7)
+- [Visualisation des données](#sec8)
+
+## Pourquoi faire des statistiques descriptives? {#sec1}
+
+Les analyses descriptives constituent la première étape de toute analyse quantitative. Elles permettent de décrire les données, d’en repérer les caractéristiques principales, d’identifier d’éventuels problèmes et d’orienter les choix méthodologiques pour les analyses ultérieures.
+
+Elles permettent de répondre à des questions simples mais essentielles telles que :
+
+ - Quelles valeurs prennent les variables ?
+ - Comment ces valeurs sont-elles réparties ?
+ - Certaines valeurs sont-elles plus fréquentes que d’autres ?
+ - Observe-t-on des valeurs manquantes ou inhabituelles ?
+ 
+Avant de comparer des groupes ou d’estimer des modèles statistiques, il est indispensable de bien comprendre les données avec lesquelles on travaille. Dans notre cas, il est utile de savoir qu'avant de chercher à expliquer des phénomènes sociaux à l’aide de données, il est indispensable de comprendre ce que sont ces données.
+
+Trois raisons peuvent être mentionnées pour justifier ces analyses: 
+
+#### 1. Comprendre les données
+
+Les statistiques descriptives permettent d’identifier :
+
+ - les valeurs typiques d’une variable (par exemple la moyenne ou la médiane),
+ - le degré de dispersion des observations,
+ - la forme générale de la distribution.
+ 
+Par exemple, connaître l’âge moyen d’un échantillon n’est pas suffisant si l’on ne sait pas si la majorité des individus ont un âge proche de cette valeur ou si les âges sont très dispersés.
+
+#### 2. Détecter les erreurs et les problèmes de données
+
+Les analyses descriptives permettent souvent de repérer :
+
+ - des erreurs de codage (et besoin d'éventuel recodage des données),
+ - des valeurs impossibles ou incohérentes,
+ - des valeurs extrêmes,
+ - des données manquantes.
+ 
+Par exemple, une variable mesurant le nombre d’années d’études ne devrait pas contenir la valeur 97. Ce type d’information indique un problème à corriger avant toute analyse plus approfondie.
+
+#### 3. Orienter les choix méthodologiques
+
+Comprendre les données, leur nature et la distribution des variables permet de déterminer :
+
+ - les statistiques pertinentes à utiliser,
+ - les graphiques appropriés,
+ - les méthodes statistiques mobilisables par la suite.
+ 
+#### Les analyses descriptives ont des limites
+
+Il est important de souligner que les analyses descriptives ne suffisent pas à tout expliquer. Il faut différencier la description de données et l'analyse de donnée. Les analyses descriptives ne permettent pas :
+
+ - d’expliquer des relations entre variables,
+ - d’établir des liens de causalité,
+ - des tester des hypothèses de recherche.
+ 
+Elles servent à préparer et éclairer l’analyse, mais ne remplacent pas les méthodes d’inférence statistique.
+
+## Importer les données. {#sec2}
+
+Pour aborder substantiellement les statistiques descriptives, nous allons travailler avec les données mises à disposition dans le livre de Llaudet, E., & Imai, K. (2023). _Data analysis for social science: A friendly and practical introduction._ Princeton University Press. Ces données sont disponibles librement sur la page GitHub d'Elena Llaudet: https://github.com/ellaudet/dss_book. 
+
+Dans ce livre, plusieurs jeux de données sont disponibles: 
+
+ - STAR.csv, basé sur l'article de Mosteller, F. (1995). The Tennessee study of class size in the early school grades. _The future of children_, 113-127.
+ 
+ - BES.csv et UK_districts.csv, basés sur l'article de Hobolt, S. B. (2016). The Brexit vote: a divided nation, a divided continent. _Journal of European public policy, 23_(9), 1259-1277.
+ 
+ - countries.csv, basé sur l'article de Henderson, J. V., Storeygard, A., & Weil, D. N. (2012). Measuring economic growth from outer space. _American economic review, 102_(2), 994-1028.
+
+ - UA_survey.csv et UA_precincts.csv, basés sur l'article de Peisakhin, L., & Rozenas, A. (2018). Electoral effects of biased media: Russian television in Ukraine. _American journal of political science, 62_(3), 535-550.
+ 
+Tout d'abord, commençons par importer ces données: 
+
+```{r}
+STAR <- read.csv(url("https://raw.githubusercontent.com/ellaudet/DSS/refs/heads/master/STAR.csv"))
+
+BES <- read.csv(url("https://raw.githubusercontent.com/ellaudet/DSS/refs/heads/master/BES.csv"))
+UK_districts <- read.csv(url("https://raw.githubusercontent.com/ellaudet/DSS/refs/heads/master/UK_districts.csv"))
+
+countries <- read.csv("https://raw.githubusercontent.com/ellaudet/DSS/refs/heads/master/countries.csv")
+
+UA_survey <- read.csv(url("https://raw.githubusercontent.com/ellaudet/DSS/refs/heads/master/UA_survey.csv"))
+UA_precincts <- read.csv(url("https://raw.githubusercontent.com/ellaudet/DSS/refs/heads/master/UA_precincts.csv"))
+```
+
+Le code ci-dessus permet d'importer les données directement depuis le projet GitHub. Vous pouvez aussi les télécharger et les importer depuis votre machine en _local_. 
+
+Voici quelques informations sur les données que nous avons importées: 
+
+#### STAR
+
+ - 1274 observations et 4 variables.
+ - Chaque observation correspond à un étudiant. 
+ - La variable classtype indique le type de classe de l'étudiant et peut prendre 2 valeurs différentes.
+ - La variable reading indique le score de lecture de l'étudiant.
+ - La variable math indique le score de maths de l'étudiant. 
+ - La variable graduated indique si l'étudiant a obtenu son diplôme. 
+ 
+#### BES
+
+ - 30895 observations et 4 variables.
+ - Chaque observation correspond à
+ un répondant à un sondage sur le Brexit. 
+ - La variable vote indique le vote du répondant sur le Brexit. 
+ - La variable leave indique si le répondant a voté pour le Brexit (1) ou contre (0).
+ - La variable education indique le niveau d'éducation du répondant. 
+ - La variable age indique l'âge du répondant. 
+ 
+#### UK_districts
+
+ - 382 observations et 3 variables.
+ - Chaque observation correspond à un district des Royaumes-Unis. 
+ - La variable name indique le nom du district.
+ - La variable leave correspond au pourcentage de vote en faveur du Brexit. 
+ - La variable higher education correspond au pourcentage d'habitants du district avec un diplôme universitaire. 
+ 
+#### UA_survey
+
+ - 358 observations et 3 variables.
+ - Chaque observation correspond à un répondant d’un sondage.
+ - La variable russian_tv indique si le district du répondant reçoit la télévision russe (1) ou non (0).
+ - La variable pro_russian indique si le répondant a voté pour le parti pro-russe lors des élections de 2014 (1) ou non (0).
+ - La variable within_25km indique si le district du répondant est dans un périmètre de 25 km autour de la frontière russe (1) ou non (0).
+
+#### UA_district
+
+ - 3589 observations et 3 variables.
+ - Chaque observation correspond à un district de l'Ukraine. 
+ - La variable russian_tv indique si le district reçoit la télévision russe ou non. 
+ - La variable pro_russian indique le pourcentage de vote pour le parti pro-russe dans le district en 2014. 
+ - La variable prior_pro_russian indique le pourcentage de vote pour le parti pro-russe dans le district en 2012.
+ - La variable within_25km indique si le district est dans un périmètre de 25 km autour de la frontière russe (1) ou non (0).
+ 
+#### countries
+
+ - 170 observations et 5 variables. 
+ - Chaque observation correspond à un pays.
+ - La variable country correspond au nom du pays. 
+ - La variable gdp indique le produit intérieur brut (PIB) en devises locales de 2005 à 2006.
+ - La variable prior_gdp indique le produit intérieur brut (PIB) en devises locales de 1992 à 1993.
+ - La variable light indique le niveau moyen d'émission lumineuse du pays pendant la nuit entre 2005 et 2006 (entre 0 et 63; 0 signifie pas de lumière du tout et 63 signifie une très forte luminosité). 
+ - La variable prior_light indique le niveau moyen d'émission de lumière du pays pendant la nuit entre 1992 et 1993 (entre 0 et 63; 0 signifie pas de lumière du tout et 63 signifie une très forte luminosité). 
+ 
+## Inspecter ses données. {#sec3}
+
+Avant de travailler en détail sur un jeu de données, il est utile de voir rapidement comment ces données sont structurées, quelles sont les variables à disposition et quelles sont les valeurs possibles. Pour ce faire, vous pouvez utiliser la fonction `head()` qui vous donnera un aperçu rapide des données. 
+
+```{r}
+head(BES)
+```
+
+Cela imprime dans notre console les six premières lignes de la base de données BES. Par défaut, cette fonction vous donnera un aperçu des six premières lignes de votre base de données. Vous pouvez changer ce nombre en précisant un deuxième paramètre dans la fonction.
+
+```{r}
+head(STAR, n=10)
+```
+
+Cette commande imprime dans notre console les dix premières lignes de la base de données STAR. 
+
+Si vous souhaitez voir la base de données en entier, vous pouvez cliquer dessus dans votre environnement ou utiliser la commande `View()`.
+
+## Les différents types de variables. {#sec4}
+
+##### Les variable métriques
+
+Les variables métriques sont des variables numériques que l'on souhaite utiliser comme telles. C'est le cas, par exemple, des variables sur les scores de lecture (variable reading) et de maths (variable math) dans la base de données STAR, du taux de personnes avec une éducation supérieure dans chaque district de la base de données UK_district. 
+
+Pour visualiser une variable dans une base de données, on peut utiliser le signe `$`. Par exemple, si l'on souhaite voir les valeurs de la variable qui indique le pourcentage de vote pour le Brexit dans les districts du Royaume-Uni, on peut indiquer: 
+
+```{r}
+UK_districts$leave
+```
+Cette commande imprimera dans votre console les 1000 premières valeurs de la variable, ce qui vous donnera une idée précise de ses valeurs possibles. 
+
+Pour utiliser une variable métrique comme telle, il est important de vérifier que sa classe est bien numérique. Dans ce cas on peut faire: 
+
+```{r}
+class(UA_precincts$pro_russian)
+```
+
+Notre variable est bien numérique ; nous pouvons donc faire les statistiques appropriées pour ce type de variable. 
+
+##### Les variables catégorielles 
+
+Les variables catégorielles sont des variables qui indiquent des éléments qui ne sont pas, ou difficilement quantifiables. Par exemple, le choix de vote dans la base de données BES ou le nom des pays dans la base de données country n'est pas une variable qui a un ordre et peut être mesurée. 
+
+D'autres variables - communément appelées ordinales - sont des variables catégorielles, mais qui présentent un ordre spécifique. Bien qu'il soit possible d'utiliser ces variables sous forme métrique, il est majoritairement recommandé de les considérer comme des catégories. Par exemple, le niveau d'éducation des individus dans la base de données UK_survey, ou la taille de la classe dans la base de données STAR est une variable catégorielle qui peut avoir un ordre logique. 
+
+ - Variable binaire
+ 
+Pour faire des statistiques, nous avons fondamentalement besoin de variables métriques. Cependant, le cas spécifique des variables binaires peut aider à comprendre comment les variables catégorielles sont considérées en statistique. Par exemple, la variable russian_tv dans la base de données UA_survey indique si le répondant est dans un district qui reçoit la télévision russe (1) ou non (0). Les _code_ pour ces variables sont numériques bien qu'ils indiquent des catégories ; on peut donc les utiliser dans nos modèles statistiques. Ces variables ont une classe spécifique : _integer_. Cela signifie qu'elles sont numériques mais n'ont pas de décimales. C'est un type de variable métrique. 
+ 
+```{r}
+class(UA_survey$russian_tv)
+
+table(UA_survey$russian_tv) ## fournit une table de fréquences de la variable. 
+
+share_russian_tv <- sum(UA_survey$russian_tv)/length(UA_survey$russian_tv)
+share_russian_tv
+```
+Avec cela, on peut calculer la "moyenne" de la variable, ce qui correspond à la part des répondants habitant dans un district qui reçoivent la télévision russe, ce qui, dans ce cas, est de ~ 55,87 %.
+
+ - Variable _character_ ou variables avec plus de deux catégories. 
+ 
+Au-delà des variables binaires de classe _integer_ on peut aussi travailler avec des variables de classe _character_ qui ont deux ou plus de deux catégories. Cela est le cas par exemple de la variable classtype dans la base de données STAR. Cette variable a deux catégories et est de classe _character_.
+
+```{r}
+class(STAR$classtype)
+table(STAR$classtype)
+```
+ 
+Cependant, on ne peut pas directement faire la même opération que précédemment, car on ne peut pas calculer la somme de cette variable. Pour changer cela, on va devoir recoder cette variable en créant par exemple une variable _classRegular_ qui prend la valeur 1 si la valeur est _regular_ et 0 si elle est _small_. 
+
+Pour les variables avec plus de deux catégories, on peut étendre cette logique et créer un nombre de variables égal au nombre de catégories. Par exemple, la variable vote dans la base de données BES a 4 catégories et est de classe character.
+
+```{r}
+class(BES$vote)
+table(BES$vote)
+```
+
+Dans ce cas, on peut créer quatre variables - voteDK, voteLeave, voteStay, voteNoVote - qui prendront la valeur 1 si le répondant indique respectivement don't know, leave, stay, won't vote, et 0 dans tous les autres cas. 
+
+ - L'utilité des variables de classe _factor_.
+
+Dans R, il existe un type de variable _factor_ utile pour traiter les variables catégorielles dans nos modèles statistiques. Il est possible que certaines variables catégorielles aient un grand nombre de catégories, comme la variable country dans la base de données countries. Au lieu de créer 170 variables binaires, on peut changer la classe de la variable en _factor_ ce qui permettra de faire certaines opérations statistiques sans devoir créer 150+ variables manuellement. 
+
+```{r}
+countries$countryFac <- as.factor(countries$country)
+class(countries$countryFac)
+countries$countryFac
+```
+
+On voit qu'à présent la variable a une classe _factor_. A la fin du nom de chaque pays, on voit aussi qu'à présent R nous indique qu'il y a 170 niveaux différents de cette variable. 
+
+## Recoder les variables dans une base de données. {#sec5}
+
+Dans une base de données, il est fréquent que certaines variables ne soient pas directement exploitables pour l’analyse. Elles peuvent être codées sous une forme peu claire, trop détaillée, ou ne pas correspondre à la question de recherche. Recoder une variable consiste à transformer ses valeurs afin de les rendre plus adaptées à l’analyse, tout en conservant l’information utile. En pratique, il est recommandé de créer une nouvelle variable recodée, plutôt que de modifier la variable originale, afin de conserver les données de départ.
+
+#### Pourquoi recoder une variable ? 
+
+Le recodage permet notamment de :
+
+ - Simplifier une variable trop détaillée
+ - Regrouper des catégories similaires
+ - Transformer une variable numérique en classes
+ - Harmoniser des codages différents
+ - Préparer les données pour un modèle statistique
+
+Pour comprendre et analyser ses données, savoir recoder une variable est un élément essentiel. 
+
+##### Comment recoder une variable?
+
+En R, le recodage se fait en créant une nouvelle variable à partir d’une variable existante, à l’aide de conditions.
+
+La structure générale: 
+ - Si la valeur respecte une condition --> alors on lui attribue une nouvelle valeur.
+ 
+Concrètement, prenons l'exemple de la variable age dans la base de données BES on peut créer des catégories pour différencier les personnes entre 18 et 40 ans, les personnes entre 41 et 64 ans et les personnes de 65 ans ou plus, on peut faire:
+
+```{r}
+BES$age_classe <- ifelse(BES$age <= 40, "18-40", ### Si la variable age est inférieure ou égale à 40, alors "18-40", sinon...
+                          ifelse(BES$age>40 & BES$age<65, "41-64",  ### Si la variable age est entre 40 et 65 alors "41-64" sinon...
+                                 "65+")) ### 65+ pour les cas restants
+
+table(BES$age_class)
+```
+
+On a ainsi regroupé les valeurs de la variable âge en trois catégories et a défini une nouvelle variable age_class qui nous donne ces catégories. Pour ce faire certains opérateur sont important à maîtriser: 
+
+ - `>` plus grand que
+ - `<` plus petit que
+ - `==` egale à
+ - `!=` pas égale à
+ - `>=` plus grand ou égale que
+ - `<=` plus petit ou égale que
+ - `&` et
+ - `|` ou
+
+Pour recoder les variables, il existe des moyens plus efficaces que le code de base dans R. La bibliothèque de fonctions distribuée par le package `dplyr` peut largement nous aider à faire ce type d'opération. 
+
+Pour utiliser `dplyr`vous pouvez vous référer à la documentation complète du package: https://cran.r-project.org/web/packages/dplyr/dplyr.pdf
+
+Mais les points importants pour recoder vos variables sont les suivants:
+
+ - Le symbole "pip" ` %>% ` indique que l'on va travailler sur l'objet correspondant. On peut le traduire par l'expression "dans lequel". Par exemple: `BES %>% ` indique que nous allons travailler sur l'objet BES.
+ - La fonction `mutate()` permet de créer de nouvelles variables.
+ - La fonction `case_when()` permet de préciser des conditions ou des cas spécifiques. 
+ 
+En pratique, pour coder notre variable de classe d'age, nous pouvons faire: 
+
+```{r}
+library(dplyr) # Attention : n'oubliez pas d'installer le package avec la commande install.packages("dplyr)
+BES <- BES %>% # On crée l'environnement BES auquel on assigne l'environnement BES dans lequel...
+  mutate(age_class = case_when( # ... on crée une variable age_class qui quand
+    age <= 40 ~ "18-40", # la variable age est inférieur ou égale à 40 prend la valeur 18-40
+    age > 40 & age <65 ~ "41-6", # la variable age est supérieur à 40 et la variable age est inférieur à 40 prend la valeur 41-64
+    age >= 65 ~ "65+" # la variable est supérieure ou égale à 65, prend la valeur 65+
+  ))
+
+table(BES$age_classe)
+```
+
+
+## Statistiques descriptives pour des variables métriques. {#sec6}
+
+Pour les variables métriques, décrire les valeurs des variables en termes de _tendence centrale_ et de _dispersion_. 
+
+Il est essentiel, pour comprendre ses données, de pouvoir effectuer d'abord ces mesures descriptives. 
+
+#### Tendences centrales
+
+Pour les mesures de tendance centrale, la moyenne et la médiane sont des éléments importants. Pour les calculer, il y a les fonctions `mean()` et `median()`. Pour savoir le moyenne du taux d'émission de lumière pendant la nuit des différents pays, on peut donc faire: 
+
+```{r}
+mean(countries$light) ### Moyenne
+median(countries$light) ### Médiane.
+```
+
+Dans le cas où votre variable a des données manquantes - indiquées `NA` -, ces fonctions retournent une erreur car elles ne peuvent pas les inclure dans le calcul. C'est le cas de la variable leave dans la base de données UK_district. Cependant, vous pouvez facilement éviter cela en indiquant dans la fonction qu'il faut oter les données manquantes avec l'argument `na.rm=T` (NA remove est vrai). 
+
+```{r}
+mean(UK_districts$leave, na.rm=T) ### Moyenne
+median(UK_districts$leave, na.rm=T) ### Médiane.
+```
+
+Pour le mode, il n'existe pas de fonction dédiée pour le calculer. On peut définir notre propre fonction pour calculer le mode. Le but est de savoir quelle valeur à la fréquence la plus élevée dans notre base de données. Pour ce faire, on peut définir la fonction suivante: 
+
+```{r}
+modeValue <- function(x) {
+  freqTable <- table(x) # définit un tableau de fréquence
+  maxFreq <- max(freqTable) # définit la valeur maximum
+  mode <- names(freqTable[freqTable==maxFreq]) # Donne le nom des valeurs qui ont la valeur maximum de fréquence
+  return(mode) # Retourne ces noms
+}
+
+modeValue(BES$age)
+```
+
+Ainsi, on peut facilement voir que le mode pour la variable age de la base de données BES est 69. 
+
+Alternativement, on peut aussi regarder le tableau de fréquences et chercher la fréquence la plus élevée. 
+
+#### Mesures de dispersion
+
+En plus des mesures de tendance centrale, on peut aussi mesurer la dispersion d'une variable métrique - la valeur maximale (`max()`), minimale (`min()`), l'étendue (`max()-min()`), la variance (`var()`), l'écart-type (`sd()`), et les quantiles (`quantile()`). 
+
+Pour illustrer leur utilisation, nous allons nous concentrer sur la variable pro_russian de la base de données US_precincts. Ces fonctions s'utilisent de la manière suivante: 
+
+```{r}
+min(UA_precincts$pro_russian)
+max(UA_precincts$pro_russian)
+max(UA_precincts$pro_russian) - min(UA_precincts$pro_russian)
+var(UA_precincts$pro_russian)
+sd(UA_precincts$pro_russian)
+quantile(UA_precincts$pro_russian)
+```
+
+Pour les quantiles, il est également possible de préciser les intervalles que nous souhaitons extraire. Par exemple, si nous voulons les déciles, nous pouvons faire: 
+
+
+```{r}
+quantile(UA_precincts$pro_russian, c(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1))
+```
+
+#### La fonction summary
+
+Il existe une fonction qui peut donner en un coup d’œil différentes informations utiles sur nos variables métriques. Cette fonction, c'est `summary()`. 
+
+```{r}
+summary(UA_precincts$pro_russian)
+```
+
+Cette fonction nous indique directement les valeurs maximales et minimales de la variable, le premier et le troisième quartile, la médiane et la moyenne d'une variable. 
+
+## Statistiques descriptives pour des variables catégorielles. {#sec7}
+
+Pour les données catégorielles, on s'intéresse surtout aux fréquences et aux proportions. 
+
+Pour cela, nous avons déjà vu que la fonction `table()` nous indique la fréquence de chaque valeur de la variable. Par exemple, pour savoir quelle est la fréquence de chaque valeur de la variable vote dans la base de données BES, on peut faire: 
+
+```{r}
+table(BES$vote)
+```
+
+Il existe aussi une fonction pour calculer directement la proportion que chaque catégorie de réponse représente. Pour cela il faut utiliser la fonction `prop.table()` de la manière suivante
+
+```{r}
+prop.table(table(BES$vote))
+```
+
+## Visualisation des données. {#sec8}
+
+Les graphiques permettent de compléter les statistiques descriptives en offrant une représentation visuelle de la distribution des données.
+
+Ils facilitent notamment :
+ - L’identification de la forme de la distribution.
+ - La détection de valeurs extrêmes.
+ - La comparaison intuitive des observations.
+
+Un bon graphique permet souvent de comprendre rapidement ce que plusieurs tableaux de chiffres ne montrent pas clairement.
+
+#### Le principe de base de ggplot2
+
+Le package ggplot2 repose sur une logique simple : un graphique est construit en combinant plusieurs éléments.
+
+ggplot(data = data, aes(x = variable)) + --> cette partie définit que nous allons utiliser ces données et cette variable
+  geom_... ---> ensuite nous allons indiquer comment nous allons grapher nos données. 
+  
+En bref: 
+
+ - data indique le jeu de données,
+ - aes() précise les variables utilisées,
+ - geom_... définit le type de graphique.
+ 
+
+#### Histogramme
+
+Objectif: Représenter la distribution d’une variable quantitative.
+
+Quand l’utiliser ?
+ - Pour analyser la forme d'une distribution,
+ - Pour analyser l’asymétrie,
+ - Pour analyser la présence de valeurs extrêmes.
+
+Si l'on représente 
+
+```{r}
+library(ggplot2)
+
+ggplot(data = countries, aes(x = light)) +
+  geom_histogram()
+```
+
+Cet histogramme nous montre que la distribution de la variable light est concentrée vers des valeurs proches de 0 et que peu de pays ont une valeur élevée sur cette variable. 
+
+#### Boxplot (boîte à moustaches)
+
+Les boxplots permettent de résumer graphiquement une distribution.
+
+Concrètement les boxplots indiquent graphiquement:
+
+ - la médiane,
+ - les quartiles et donc l'espace interquartile
+ - les valeurs extrêmes.
+ 
+ Par exemple, pour faire un boxplot de la variable reading dans la base de données STAR on peut faire: 
+ 
+```{r}
+ggplot(data = STAR, aes(x = "", y = reading)) +
+  geom_boxplot()
+``` 
+ 
+ 
+#### Diagramme en barre: 
+
+Pour les variables catégorielles, on peut faire un diagramme en barres. 
+
+Son objectif est de représenter la fréquence des catégories.
+
+On l'utilise pour visualiser la répartition des individus selon différentes modalités.
+
+Par exemple, si l'on veut voir la distribution des répondants par classe d'âge (la variable que nous avons recodé) dans les données BES, nous pouvons faire: 
+
+```{r}
+ggplot(data = BES, aes(x = age_classe)) +
+  geom_bar()
+```
+
+Pour ces diagrammes, il est parfois plus utile de représenter l'axe des y en termes de proportion qu'en termes de fréquence. Pour ce faire on peut simplement indiquer: 
+
+```{r}
+ggplot(data = BES, aes(x = age_classe)) +
+  geom_bar(aes(y = after_stat(prop), group = 1))
+```
+#### Changer les éléments estétiques des graphiques. 
+
+Pour qu'un graphique soit lisible, il est important de modifier certains éléments. Le nom des axes doit transmettre des éléments concrets et on peut considérer qu'un graphique qui présente des résultats sans superflu est plus lisible. 
+
+Avec `ggplot2`, on peut absolument tout modifier, il faut simplement savoir comment. Voici un exemple du diagramme de distribution présenté ci-dessous avec une esthétique différente. 
+
+```{r}
+ggplot(data = BES, aes(x = age_classe)) +
+  geom_bar(aes(y = after_stat(prop), group = 1), fill = NA, color = "black", width=.3)+
+  theme_minimal()+
+  xlab("Classe d'âge")+
+  ylab("Proportion de répondant")
+```
