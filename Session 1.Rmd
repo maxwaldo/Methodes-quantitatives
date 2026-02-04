@@ -1,0 +1,276 @@
+---
+title: "1. Introduction à R"
+author: "Maxime Walder"
+date: "2026-02-02"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Organisation du document
+
+- [Qu'est-ce que R et RStudio ?](#sec1)
+- [Comment fonctionne R ?](#sec2)
+- [Assigner des valeurs à des objets](#sec3)
+- [Types d'objets et structures](#sec-types)
+- [Les fonctions](#sec4)
+- [Installer des packages et utiliser des librairies](#sec5)
+
+---
+
+## Qu'est-ce que R et RStudio ? {#sec1}
+
+R est un *langage de programmation* couramment utilisé pour effectuer des analyses statistiques. Cependant, son utilisation ne se limite pas aux statistiques. En tant que langage de programmation, il est possible de faire de nombreuses choses avec R, notamment la production de documents `.html` comme celui-ci.
+
+RStudio est un IDE (*Integrated Development Environment*, ou environnement de développement intégré). Il s'agit d'un logiciel qui facilite l'écriture, l'organisation et l'exécution du code en R. Vos programmes écrits en R peuvent être exécutés via un terminal, mais RStudio permet de travailler de manière plus claire et plus efficace.
+
+En résumé : R est un langage de programmation utilisé principalement pour les statistiques, tandis que RStudio est un logiciel qui rend l'écriture et l'exécution du code plus simples.
+
+---
+
+## Comment fonctionne R ? {#sec2}
+
+### Console vs scripts
+
+Pour travailler avec R, vous pouvez soit écrire directement du code dans la *console*, soit utiliser des scripts. L'utilisation de scripts devient nécessaire lorsque vous développez des programmes plus complexes qu'une ou deux commandes isolées.
+
+### Exécuter une ligne ou un script entier
+
+RStudio permet d'exécuter le code de manière flexible. Lorsque vous lancez un script complet, l'ensemble du programme est exécuté. Vous pouvez également exécuter le code ligne par ligne, ce qui facilite la compréhension et la détection d'erreurs.
+
+### Commenter votre code
+
+Tout ce que vous écrivez dans un script est lu et exécuté par R. Il est donc important de commenter votre travail, surtout lorsque les scripts deviennent longs et complexes.
+
+R étant un langage *open source*, les programmes sont souvent partagés sur des plateformes comme *GitHub*. Dans ce contexte, commenter son code est essentiel pour permettre aux autres utilisateurs de le comprendre.
+
+Pour commenter une ligne en R, on utilise le symbole `#`. Tout ce qui suit ce symbole sur une ligne n'est pas exécuté.
+
+---
+
+## Assigner des valeurs à des objets {#sec3}
+
+En R, on assigne des valeurs à des objets à l'aide de l'opérateur `<-`. Par exemple, pour assigner la valeur 5 à l'objet `x` :
+
+```{r}
+x <- 5
+```
+
+Après cette commande, l'objet `x` contient la valeur 5. Pour afficher son contenu, il suffit d'écrire son nom :
+
+```{r}
+x
+```
+
+Ou d'utiliser la fonction `print()` :
+
+```{r}
+print(x)
+```
+
+Vous pouvez ensuite effectuer des opérations sur vos objets. Par exemple :
+
+```{r}
+x + 7
+```
+
+Les noms d'objets doivent respecter certaines règles : ils ne peuvent pas commencer par un chiffre, et les espaces sont déconseillés. R est sensible à la casse (majuscules/minuscules).
+
+Si vous réassignez une valeur à un objet existant, celle-ci remplace l'ancienne :
+
+```{r}
+x <- x + 7
+x
+```
+
+---
+
+## Types d'objets et structures {#sec-types}
+
+Il existe plusieurs types d'objets en R, qui possèdent des structures et des usages différents.
+
+### Les classes
+
+Chaque objet appartient à une classe. Pour connaître la classe d'un objet, on utilise la fonction `class()` :
+
+```{r}
+class(x)
+```
+
+La classe `numeric` correspond aux valeurs numériques.
+
+Un objet contenant du texte est de classe `character` :
+
+```{r}
+textObj <- "text"
+class(textObj)
+```
+
+La classe `logical` correspond aux valeurs logiques (`TRUE` ou `FALSE`) :
+
+```{r}
+xSupp5 <- x > 5
+xInf5 <- x < 5
+
+xSupp5
+xInf5
+```
+
+```{r}
+class(xSupp5)
+```
+
+La classe `factor` est utilisée pour représenter des variables catégorielles :
+
+```{r}
+xFac <- as.factor(x)
+class(xFac)
+```
+
+---
+
+### Les vecteurs
+
+Un vecteur est un objet à une seule dimension. Les objets présentés jusqu'ici sont des vecteurs de longueur 1.
+
+Pour créer un vecteur plus long, on utilise la fonction `c()` :
+
+```{r}
+vec1 <- c(1,2,3,4,5,6,7,8,9,10)
+vec1
+length(vec1)
+class(vec1)
+```
+
+Pour accéder à un élément précis, on utilise les crochets `[]` :
+
+```{r}
+vec1[5]
+```
+
+Pour sélectionner des éléments selon une condition :
+
+```{r}
+vec1[which(vec1 < 4)]
+```
+
+---
+
+### Les data frames
+
+Les data frames sont des objets à deux dimensions (lignes et colonnes). Ils correspondent aux tableaux utilisés en sciences sociales (par exemple dans Excel).
+
+Création d'un data frame :
+
+```{r}
+data1 <- data.frame(
+  x1 = 1:10, x2 = 1:10,
+  x3 = 1:10, x4 = 1:10,
+  x5 = 1:10, x6 = 1:10,
+  x7 = 1:10, x8 = 1:10,
+  x9 = 1:10, x10 = 1:10
+)
+```
+
+Dimensions du data frame :
+
+```{r}
+dim(data1)
+```
+
+Accès aux éléments :
+
+```{r}
+data1[5,5]
+```
+
+```{r}
+data1[5,]
+```
+
+```{r}
+data1[,5]
+```
+
+Accès à une variable avec `$` :
+
+```{r}
+data1$x5
+```
+
+En pratique, les data frames sont le plus souvent importés depuis des fichiers de données.
+
+---
+
+### Autres types d'objets
+
+Il existe d'autres types d'objets, comme `list`, `matrix` ou `haven_labelled`. Ils permettent des formes de stockage spécifiques et seront rencontrés dans des analyses plus avancées.
+
+---
+
+## Les fonctions {#sec4}
+
+Les fonctions sont des objets permettant d'automatiser des opérations. Elles évitent de répéter plusieurs fois le même code.
+
+Exemple de création d'une fonction :
+
+```{r}
+DiffSumProduct <- function(num1, num2) { # Fonction à deux arguments
+  sum <- num1 + num2      # Calcul de la somme
+  product <- num1 * num2 # Calcul du produit
+  diff <- sum - product  # Différence
+  return(diff)           # Valeur retournée
+}
+```
+
+Utilisation de la fonction :
+
+```{r}
+DiffSumProduct(5, 7)
+```
+
+Application à un data frame :
+
+```{r}
+data1$diffSumProduct <- DiffSumProduct(data1$x1, data1$x2)
+data1$diffSumProduct
+```
+
+Les fonctions sont souvent regroupées dans des packages, qui facilitent le développement et le partage d'outils.
+
+---
+
+## Installer des packages et utiliser des librairies {#sec5}
+
+R contient de nombreuses fonctions de base, comme `print()`, `class()` ou `dim()`.
+
+Il existe également un grand nombre de packages développés par la communauté.
+
+Pour installer un package, on utilise `install.packages()` :
+
+```r
+install.packages("ggplot2")
+```
+
+Cette commande installe le package sur votre ordinateur, mais ne le charge pas automatiquement.
+
+Pour l'utiliser dans un script, il faut charger la librairie avec `library()` :
+
+```{r}
+library(ggplot2)
+```
+
+Vous pouvez maintenant utiliser les fonctions du package `ggplot2` pour créer des graphiques :
+
+```{r}
+ggplot() +
+  geom_point(aes(x = cos(seq(0, 2*pi, length.out = 1000)),
+                 y = sin(seq(0, 2*pi, length.out = 1000)))) +
+  geom_point(aes(x = c(-0.3, 0.3), y = c(0.3, 0.3)), size = 15, color = "darkgreen") +
+  geom_point(aes(x = 0.5*cos(seq(0, 2*pi, length.out = 1000))[600:900],
+                 y = 0.5*sin(seq(0, 2*pi, length.out = 1000))[600:900])) +
+  theme_void()
+```
+
